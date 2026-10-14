@@ -35,14 +35,35 @@ public class RequestService {
     }
 
     public LearningRequest createRequest(LearningRequestDTO dto) {
-        User sender = userRepository.findById(dto.getSenderId())
+        if (dto == null) {
+            throw new IllegalArgumentException("Request payload is required");
+        }
+
+        Long senderId = dto.getSenderId();
+        Long receiverId = dto.getReceiverId();
+        Long skillId = dto.getSkillId();
+
+        if (senderId == null || receiverId == null || skillId == null) {
+            throw new IllegalArgumentException("Sender, receiver, and skill IDs are required");
+        }
+
+        if (senderId.equals(receiverId)) {
+            throw new IllegalArgumentException("Sender and receiver cannot be the same user");
+        }
+
+        String message = dto.getMessage();
+        if (message == null || message.isBlank()) {
+            throw new IllegalArgumentException("Message is required");
+        }
+
+        User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
-        User receiver = userRepository.findById(dto.getReceiverId())
+        User receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
-        Skill skill = skillRepository.findById(dto.getSkillId())
+        Skill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> new RuntimeException("Skill not found"));
 
-        LearningRequest request = new LearningRequest(sender, receiver, skill, dto.getMessage());
+        LearningRequest request = new LearningRequest(sender, receiver, skill, message.trim());
         return learningRequestRepository.save(request);
     }
 

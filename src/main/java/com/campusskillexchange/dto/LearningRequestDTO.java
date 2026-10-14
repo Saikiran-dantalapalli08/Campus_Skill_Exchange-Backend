@@ -1,9 +1,19 @@
 package com.campusskillexchange.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class LearningRequestDTO {
+    @NotNull(message = "Sender ID is required")
     private Long senderId;
+
+    @NotNull(message = "Receiver ID is required")
     private Long receiverId;
+
+    @NotNull(message = "Skill ID is required")
     private Long skillId;
+
+    @NotBlank(message = "Message is required")
     private String message;
 
     public Long getSenderId() {
